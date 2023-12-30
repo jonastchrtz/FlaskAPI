@@ -10,10 +10,11 @@ import joblib
 # Load data
 data = pd.read_csv('dataset.csv')
 cleaned_data = data.drop(columns=['family_history_with_overweight', 'FAVC', 'FCVC', 'NObeyesdad', 'TUE'])
+cleaned_data = cleaned_data.rename(columns={'Age': 'age', 'Height': 'height', 'Weight': 'weight', 'FAF': 'physicalActivityFrequency', 'CH2O': 'waterConsumption', 'NCP': 'mainMeals', 'MTRANS': 'transportation', 'SCC': 'calorieMonitoring', 'CAEC': 'foodBetweenMainMeals', 'CALC': 'alcoholConsumption'})
 
 # Preprocessing
-numeric_features = ['Age', 'Height', 'Weight', 'FAF', 'CH2O', 'NCP']
-categorical_features = ['MTRANS', 'SCC', 'SMOKE', 'CAEC', 'CALC']
+numeric_features = ['age', 'height', 'weight', 'physicalActivityFrequency', 'waterConsumption', 'mainMeals']
+categorical_features = ['transportation', 'calorieMonitoring', 'foodBetweenMainMeals', 'alcoholConsumption']
 
 preprocessor = ColumnTransformer(
     transformers=[
@@ -25,23 +26,23 @@ pca = PCA(n_components=2)
 
 # K-Means Clustering
 kmeans = Pipeline(steps=[('preprocessor', preprocessor),
-                         #('pca', pca),
+                         ('pca', pca),
                          ('cluster', KMeans(n_clusters=4))])
 
 joblib.dump(kmeans, 'kmeans_model.joblib')
 
 cluster_labels = kmeans.fit_predict(cleaned_data)
 # Assuming 'kmeans' is your trained K-means model
-centroids = kmeans.named_steps['cluster'].cluster_centers_
+# centroids = kmeans.named_steps['cluster'].cluster_centers_
 
-numeric_features_transformed = numeric_features  # StandardScaler doesn't change feature names
-categorical_features_transformed = list(preprocessor.named_transformers_['cat'].get_feature_names_out())
-all_feature_names = numeric_features_transformed + categorical_features_transformed
+# numeric_features_transformed = numeric_features  # StandardScaler doesn't change feature names
+# categorical_features_transformed = list(preprocessor.named_transformers_['cat'].get_feature_names_out())
+# all_feature_names = numeric_features_transformed + categorical_features_transformed
 # Adjust the index below based on the number of categorical features after one-hot encoding
-centroid_df = pd.DataFrame(centroids, columns=all_feature_names)
+# centroid_df = pd.DataFrame(centroids, columns=all_feature_names)
 
-print(centroid_df)
-centroid_df.to_csv("centroid.csv")
+# print(centroid_df)
+# centroid_df.to_csv("centroid.csv")
 
 reduced_df = pd.DataFrame(kmeans.named_steps['pca'].transform(
     kmeans.named_steps['preprocessor'].transform(cleaned_data)), 
