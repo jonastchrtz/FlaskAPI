@@ -42,30 +42,30 @@ class MultiHotEncoder(BaseEstimator, TransformerMixin):
 
         result = np.concatenate(result, axis=1)
         return result
-
+    
 firebase_url = "https://socialactivity-app-default-rtdb.europe-west1.firebasedatabase.app/"
 
 def get_all_users_df():
-    json = requests.get(firebase_url + "users.json").json()
-    return pd.DataFrame.from_dict(json, orient='index')
+        json = requests.get(firebase_url + "users.json").json()
+        return pd.DataFrame.from_dict(json, orient='index')
 
-# Example of preprocessing step for the new data
-new_numeric_features = ['averageStepsPerDay']
-new_categorical_features = ['socialDirection']
-new_multilabel_features = ['favouriteActivities']
-numeric_features = ['age', 'height', 'weight', 'physicalActivityFrequency', 'waterConsumption', 'mainMeals']
-categorical_features = ['transportation', 'calorieMonitoring', 'foodBetweenMainMeals', 'alcoholConsumption']
+def find_most_similar_user(username):
+    # Example of preprocessing step for the new data
+    new_numeric_features = ['averageStepsPerDay']
+    new_categorical_features = ['socialDirection']
+    new_multilabel_features = ['favouriteActivities']
+    numeric_features = ['age', 'height', 'weight', 'physicalActivityFrequency', 'waterConsumption', 'mainMeals']
+    categorical_features = ['transportation', 'calorieMonitoring', 'foodBetweenMainMeals', 'alcoholConsumption']
 
-kmeans_model = joblib.load('kmeans_model.joblib')
+    kmeans_model = joblib.load('kmeans_model.joblib')
 
-data = get_all_users_df()
-data_old_features = data[numeric_features + categorical_features]
-data_old_features['waterConsumption'] = data_old_features['waterConsumption'].astype(int)
+    data = get_all_users_df()
+    data_old_features = data[numeric_features + categorical_features]
+    data_old_features['waterConsumption'] = data_old_features['waterConsumption'].astype(int)
 
-cluster_labels = kmeans_model.fit_predict(data_old_features)
-data['cluster'] = cluster_labels
+    cluster_labels = kmeans_model.fit_predict(data_old_features)
+    data['cluster'] = cluster_labels
 
-def find_most_similar_user(username, data):
     # Check if the user exists
     if username not in data.index:
         return "User not found."
@@ -150,6 +150,3 @@ def find_most_similar_user_out_of_cluster(username, data):
     most_similar_user = data.iloc[most_similar_user_index].name
 
     return most_similar_user
-
-
-
