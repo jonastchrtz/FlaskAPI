@@ -50,10 +50,6 @@ def get_all_users_df():
         return pd.DataFrame.from_dict(json, orient='index')
 
 def find_most_similar_user(username):
-    # Example of preprocessing step for the new data
-    new_numeric_features = ['averageStepsPerDay']
-    new_categorical_features = ['socialDirection']
-    new_multilabel_features = ['favouriteActivities']
     numeric_features = ['age', 'height', 'weight', 'physicalActivityFrequency', 'waterConsumption', 'mainMeals']
     categorical_features = ['transportation', 'calorieMonitoring', 'foodBetweenMainMeals', 'alcoholConsumption']
 
@@ -78,14 +74,12 @@ def find_most_similar_user(username):
     user_data = cluster_data.loc[[username]]
 
     # Preprocess the features for users in the cluster
-    new_numeric_features = ['averageStepsPerDay']
     new_categorical_features = ['socialDirection']
     new_multilabel_features = ['favouriteActivities']
-    new_features = new_numeric_features + new_categorical_features + new_multilabel_features
+    new_features = new_categorical_features + new_multilabel_features
 
     preprocessor = ColumnTransformer(
         transformers=[
-            ('num', StandardScaler(), new_numeric_features),
             ('cat', OneHotEncoder(handle_unknown='ignore'), new_categorical_features),
             ('mlb', MultiHotEncoder(), new_multilabel_features)
             ])
@@ -120,14 +114,12 @@ def find_most_similar_user_out_of_cluster(username, data):
     user_data = data.loc[[username]]
 
     # Preprocess the features for users in the cluster
-    new_numeric_features = ['averageStepsPerDay']
     new_categorical_features = ['socialDirection']
     new_multilabel_features = ['favouriteActivities']
-    new_features = new_numeric_features + new_categorical_features + new_multilabel_features
+    new_features = new_categorical_features + new_multilabel_features
 
     preprocessor = ColumnTransformer(
         transformers=[
-            ('num', StandardScaler(), new_numeric_features),
             ('cat', OneHotEncoder(handle_unknown='ignore'), new_categorical_features),
             ('mlb', MultiHotEncoder(), new_multilabel_features)
             ])
