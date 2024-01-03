@@ -75,11 +75,13 @@ def find_most_similar_user(username):
 
     # Preprocess the features for users in the cluster
     new_categorical_features = ['socialDirection']
+    new_numerical_features = ['metabolicEquivalentTask']
     new_multilabel_features = ['favouriteActivities']
-    new_features = new_categorical_features + new_multilabel_features
+    new_features = new_categorical_features + new_multilabel_features + new_numerical_features
 
     preprocessor = ColumnTransformer(
         transformers=[
+            ('num', StandardScaler(), new_numerical_features),
             ('cat', OneHotEncoder(handle_unknown='ignore'), new_categorical_features),
             ('mlb', MultiHotEncoder(), new_multilabel_features)
             ])
@@ -115,11 +117,13 @@ def find_most_similar_user_out_of_cluster(username, data):
 
     # Preprocess the features for users in the cluster
     new_categorical_features = ['socialDirection']
+    new_numerical_features = ['metabolicEquivalentTask']
     new_multilabel_features = ['favouriteActivities']
-    new_features = new_categorical_features + new_multilabel_features
+    new_features = new_categorical_features + new_multilabel_features + new_numerical_features
 
     preprocessor = ColumnTransformer(
         transformers=[
+            ('num', StandardScaler(), new_numerical_features),
             ('cat', OneHotEncoder(handle_unknown='ignore'), new_categorical_features),
             ('mlb', MultiHotEncoder(), new_multilabel_features)
             ])
